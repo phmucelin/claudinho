@@ -18,16 +18,46 @@ I kept getting cut off mid-task by the 5-hour limit with no idea I was close. Cl
 
 It refreshes every minute and again when you open the popover. If the API rate-limits it, it backs off for as long as the server asks.
 
-## Setup
+## Connecting your accounts
 
-There's nothing to configure. Claudinho reuses the logins you already have:
+Claudinho has no login screen of its own. It reads the session the official CLIs already keep on your Mac, so connecting an account just means logging in to that CLI once.
 
-| Service | Where it reads the login from | What you need |
-|---|---|---|
-| Claude | macOS Keychain item `Claude Code-credentials` (falls back to `~/.claude/.credentials.json`) | Run `claude` once and log in with your Claude account |
-| Codex | `~/.codex/auth.json` | Run `codex` once and log in with ChatGPT |
+### Claude
 
-If Codex isn't logged in, its section is just hidden. When a token expires, using the CLI in any terminal refreshes it, and Claudinho picks up the new one on the next poll.
+1. Install [Claude Code](https://docs.anthropic.com/en/docs/claude-code/setup) if you don't have it: `npm install -g @anthropic-ai/claude-code`
+2. Run `claude` in a terminal and pick **log in with your Claude account** (Pro or Max). The browser opens, you approve, done.
+3. Open Claudinho. Your limits show up within a few seconds.
+
+Already using Claude Code? You're done, there's nothing else to do. To switch accounts, run `/login` inside Claude Code and Claudinho follows on the next refresh.
+
+> Usage limits only exist on Claude subscriptions. If Claude Code is logged in with an Anthropic Console API key, there are no limits for Claudinho to show.
+
+### Codex (optional)
+
+1. Install the [Codex CLI](https://github.com/openai/codex): `npm install -g @openai/codex`
+2. Run `codex` and pick **Sign in with ChatGPT**.
+3. The Codex section appears in the popover on the next refresh. To see it in the menu bar too, turn on **Mostrar Codex na barra** in the gear menu.
+
+If Codex isn't logged in (or is using an API key), its section stays hidden.
+
+### Where the logins come from
+
+| Service | Read from |
+|---|---|
+| Claude | macOS Keychain item `Claude Code-credentials`, falling back to `~/.claude/.credentials.json` |
+| Codex | `~/.codex/auth.json` |
+
+Claudinho never writes to these and never refreshes tokens itself. The CLIs refresh them whenever you use them.
+
+### Troubleshooting
+
+| Popover says | What to do |
+|---|---|
+| *Login do Claude Code não encontrado* | Claude Code isn't logged in on this Mac. Run `claude` and log in with your Claude account. |
+| *Token expirou* | Open `claude` in any terminal. It renews the token on startup and Claudinho picks it up within a minute. |
+| *Token do Codex expirou* | Same thing: open `codex` once. |
+| *Muitas consultas, tentando de novo já já* | The API rate-limited the request. Claudinho waits as long as the server asks and retries on its own. |
+| *Resposta da API em formato inesperado* | The usage endpoint changed. Please open an issue. |
 
 ## Install
 
